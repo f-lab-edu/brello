@@ -1,9 +1,14 @@
 "use client";
 
+import { useEffect } from "react";
 import useBearStore from "./store/useBearStore";
 
 export default function Home() {
   const { bears, increaseBear, removeAllBears } = useBearStore();
+
+  useEffect(() => {
+    fetch("/api/test").then((res) => res.json());
+  }, []);
 
   return (
     <div className="text-center">
