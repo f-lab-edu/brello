@@ -1,14 +1,17 @@
 "use client";
 
-import { useEffect } from "react";
 import useBearStore from "./store/useBearStore";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Home() {
   const { bears, increaseBear, removeAllBears } = useBearStore();
 
-  useEffect(() => {
-    fetch("/api/test").then((res) => res.json());
-  }, []);
+  const { data } = useQuery({
+    queryKey: ["query-test"],
+    queryFn: () => fetch("/api/test").then((res) => res.json()),
+  });
+
+  console.log(data, "react-query 테스트");
 
   return (
     <div className="text-center">
