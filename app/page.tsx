@@ -1,35 +1,25 @@
 "use client";
 
-import useBearStore from "./store/useBearStore";
-import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
+import Button from "./_components/Button";
 
 export default function Home() {
-  const { bears, increaseBear, removeAllBears } = useBearStore();
-
-  const { data } = useQuery({
-    queryKey: ["query-test"],
-    queryFn: () => fetch("/api/test").then((res) => res.json()),
-  });
-
-  console.log(data, "react-query 테스트");
-
   return (
-    <div className="text-center">
-      <h1 className="text-3xl font-bold underline my-10">
-        {bears} bears around here...
-      </h1>
-      <button
-        className="border-solid border-2 border-indigo-600 w-48 text-center mx-2"
-        onClick={increaseBear}
-      >
-        one up
-      </button>
-      <button
-        className="border-solid border-2 border-indigo-600 w-48 text-center mx-2"
-        onClick={removeAllBears}
-      >
-        remove all
-      </button>
+    <div className="w-full h-full p-20 flex justify-between text-center bg-[#d7eab1]">
+      <div className="flex flex-col justify-center text-left">
+        <h1 className="text-6xl font-bold mb-8">Brello</h1>
+        <h3 className="text-3xl font-semibold mb-4">
+          Brello lets you work more collaboratively and get more done.
+        </h3>
+        <p className="mb-6">
+          Brello&apos;s board,lists,and cards enable you to organize and
+          prioritize your projects in a fun,flexible and rewarding way.
+        </p>
+        <Link href="/boards">
+          <Button label="Continue" />
+        </Link>
+      </div>
+      <img src="/img.webp" alt="" />
     </div>
   );
 }
