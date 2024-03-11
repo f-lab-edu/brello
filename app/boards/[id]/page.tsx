@@ -10,43 +10,43 @@ import Button from "@/app/_components/Button";
 import useBoardStore from "@/app/store/useBoardStore";
 
 export default function Board() {
-  const { boards, setBoards } = useBoardStore();
+  const { board, setBoard } = useBoardStore();
 
   const onDragEnd = ({ source, destination }: DropResult) => {
     if (!destination) return;
 
     //내부로 움직일 때
     if (source.droppableId === destination.droppableId) {
-      const sourceBoardTodos = [...boards[source.droppableId]];
-      const targetTodo = sourceBoardTodos[source.index];
+      const sourceListTodos = [...board[source.droppableId]];
+      const targetTodo = sourceListTodos[source.index];
 
-      sourceBoardTodos.splice(source.index, 1);
-      sourceBoardTodos.splice(destination.index, 0, targetTodo);
+      sourceListTodos.splice(source.index, 1);
+      sourceListTodos.splice(destination.index, 0, targetTodo);
 
-      setBoards({ ...boards, [source.droppableId]: sourceBoardTodos });
+      setBoard({ ...board, [source.droppableId]: sourceListTodos });
     }
 
     //외부로 움직일 때
     if (source.droppableId !== destination.droppableId) {
-      const sourceBoardTodos = [...boards[source.droppableId]];
-      const destinationBoardTodos = [...boards[destination.droppableId]];
-      const targetTodo = sourceBoardTodos[source.index];
+      const sourceListTodos = [...board[source.droppableId]];
+      const destinationListTodos = [...board[destination.droppableId]];
+      const targetTodo = sourceListTodos[source.index];
 
-      sourceBoardTodos.splice(source.index, 1);
-      destinationBoardTodos.splice(destination.index, 0, targetTodo);
+      sourceListTodos.splice(source.index, 1);
+      destinationListTodos.splice(destination.index, 0, targetTodo);
 
-      setBoards({
-        ...boards,
-        [source.droppableId]: sourceBoardTodos,
-        [destination.droppableId]: destinationBoardTodos,
+      setBoard({
+        ...board,
+        [source.droppableId]: sourceListTodos,
+        [destination.droppableId]: destinationListTodos,
       });
     }
   };
 
   const onBoardAdd = () => {
-    const newBoard = `Board${Object.keys(boards).length + 1}`;
+    const newList = `List${Object.keys(board).length + 1}`;
 
-    setBoards({ ...boards, [newBoard]: [] });
+    setBoard({ ...board, [newList]: [] });
   };
 
   return (
@@ -56,13 +56,9 @@ export default function Board() {
         <Sidebar />
         <div className="overflow-x-auto flex items-start h-full p-4">
           <DragDropContext onDragEnd={onDragEnd}>
-            {Object.keys(boards).map((boardId) => {
+            {Object.keys(board).map((listId) => {
               return (
-                <TodoList
-                  key={boardId}
-                  boardId={boardId}
-                  toDos={boards[boardId]}
-                />
+                <TodoList key={listId} listId={listId} toDos={board[listId]} />
               );
             })}
           </DragDropContext>

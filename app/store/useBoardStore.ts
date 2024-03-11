@@ -5,25 +5,25 @@ export type Todo = {
   text: string;
 };
 
-type Boards = {
+type Lists = {
   [key: string]: Todo[];
 };
 
 type BoardStore = {
-  boards: Boards;
-  setBoards: (newBoards: Boards) => void;
+  board: Lists;
+  setBoard: (newLists: Lists) => void;
 };
 
 const useBoardStore = create<BoardStore>((set) => ({
-  boards: {
-    Board1: [
+  board: {
+    List1: [
       { id: 123, text: "hello" },
       { id: 345, text: "hi" },
     ],
-    Board2: [{ id: 128, text: "bye" }],
-    Board3: [],
+    List2: [{ id: 128, text: "bye" }],
+    List3: [],
   },
-  setBoards: (newBoards) => set({ boards: { ...newBoards } }),
+  setBoard: (newLists) => set({ board: { ...newLists } }),
 }));
 
 export default useBoardStore;

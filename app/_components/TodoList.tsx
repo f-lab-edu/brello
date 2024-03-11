@@ -7,12 +7,12 @@ import TodoItem from "./TodoItem";
 import useBoardStore, { Todo } from "../store/useBoardStore";
 
 type TodoListProps = {
-  boardId: string;
+  listId: string;
   toDos: Todo[];
 };
 
-export default function TodoList({ boardId, toDos }: TodoListProps) {
-  const { boards, setBoards } = useBoardStore();
+export default function TodoList({ listId, toDos }: TodoListProps) {
+  const { board, setBoard } = useBoardStore();
 
   const hanldeItemAdd = () => {
     const id = Date.now();
@@ -20,18 +20,18 @@ export default function TodoList({ boardId, toDos }: TodoListProps) {
 
     if (!text) return;
 
-    const sourceBoardTodos = [...boards[boardId]];
+    const sourceListTodos = [...board[listId]];
 
-    setBoards({
-      ...boards,
-      [boardId]: [...sourceBoardTodos, { id, text }],
+    setBoard({
+      ...board,
+      [listId]: [...sourceListTodos, { id, text }],
     });
   };
 
   return (
     <div className="border-solid border-2 bg-gray-100 mx-2 min-w-[270px] rounded-lg p-4 max-h-full flex flex-col">
-      <h3 className="font-semibold mb-4">{boardId}</h3>
-      <Droppable droppableId={boardId}>
+      <h3 className="font-semibold mb-4">{listId}</h3>
+      <Droppable droppableId={listId}>
         {(provided) => {
           return (
             <ul
