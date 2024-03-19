@@ -1,14 +1,14 @@
 import { Draggable } from "react-beautiful-dnd";
-import { Todo } from "../store/useBoardStore";
+import { Card } from "../mocks/handlers";
 
-interface ToDoItemProps {
-  toDo: Todo;
+interface Props {
+  card: Card;
   index: number;
 }
 
-export default function TodoItem({ toDo, index }: ToDoItemProps) {
+export default function Card({ card, index }: Props) {
   return (
-    <Draggable key={toDo.id} draggableId={String(toDo.id)} index={index}>
+    <Draggable key={card.id} draggableId={String(card.id)} index={index}>
       {(provided) => {
         return (
           <li
@@ -17,7 +17,7 @@ export default function TodoItem({ toDo, index }: ToDoItemProps) {
             {...provided.draggableProps}
             {...provided.dragHandleProps}
           >
-            {toDo.text}
+            {card.name}
           </li>
         );
       }}

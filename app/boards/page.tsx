@@ -5,11 +5,36 @@ import Sidebar from "../_components/Sidebar";
 import Header from "../_components/Header";
 
 import { CiSearch } from "react-icons/ci";
+import { useGetBoards, usePostBoard } from "../api/boards";
+import { useQueryClient } from "@tanstack/react-query";
 
-export default function Boards() {
+export default function BoardsPage() {
+  const { data, isLoading } = useGetBoards();
+
+  const queryClient = useQueryClient();
+
+  const { mutate: postBoard } = usePostBoard();
+
+  const handleBoardAdd = () => {
+    const name = prompt("보드명을 입력하세요.");
+
+    if (!name) return;
+
+    postBoard(
+      { name },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["boards"] });
+        },
+      },
+    );
+  };
+
+  if (isLoading) return <></>;
+
   return (
     <>
-      <Header />
+      <Header userName="devbit4" />
       <div className="flex overflow-x-hidden h-[calc(100%-46px)] ">
         <Sidebar />
         <div className="p-[32px]">
@@ -30,27 +55,23 @@ export default function Boards() {
           </div>
           <ul className="flex flex-wrap max-h-[70%] overflow-y-scroll">
             <div>
-              <button className="w-[230px] h-[96px] border my-4 mr-4 bg-gray-100 text-[14px]">
+              <button
+                className="w-[230px] h-[96px] border my-4 mr-4 bg-gray-100 text-[14px]"
+                onClick={handleBoardAdd}
+              >
                 Create new board
               </button>
             </div>
 
-            <Link href="boards/1">
-              <li className="w-[230px] h-[96px] border my-4 mr-4 p-2 bg-red-400 text-white font-bold">
-                첫번째 보드
-              </li>
-            </Link>
-
-            <Link href="boards/2">
-              <li className="w-[230px] h-[96px] border my-4 mr-4 p-2 bg-blue-400 text-white font-bold">
-                두번째 보드
-              </li>
-            </Link>
-            <Link href="boards/2">
-              <li className="w-[230px] h-[96px] border my-4 mr-4 p-2 bg-blue-400 text-white font-bold">
-                세번째 보드
-              </li>
-            </Link>
+            {data?.boards.map((board) => {
+              return (
+                <Link href={`boards/${board.id}`} key={board.id}>
+                  <li className="w-[230px] h-[96px] border my-4 mr-4 p-2 bg-red-400 text-white font-bold">
+                    {board.name}
+                  </li>
+                </Link>
+              );
+            })}
           </ul>
         </div>
       </div>

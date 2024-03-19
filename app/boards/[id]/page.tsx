@@ -1,69 +1,72 @@
 "use client";
 
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
+import { useQueryClient } from "@tanstack/react-query";
 
 import Header from "@/app/_components/Header";
 import Sidebar from "@/app/_components/Sidebar";
-import TodoList from "@/app/_components/TodoList";
+import List from "@/app/_components/List";
 import Button from "@/app/_components/Button";
 
-import useBoardStore from "@/app/store/useBoardStore";
+import { useGetLists, usePostList, usePutList } from "@/app/api/boards";
+import { useParams } from "next/navigation";
 
-export default function Board() {
-  const { board, setBoard } = useBoardStore();
+export default function BoardPage() {
+  const params = useParams();
+  const { id: boardId } = params;
 
-  const onDragEnd = ({ source, destination }: DropResult) => {
+  const queryClient = useQueryClient();
+
+  const { mutate: putList } = usePutList();
+
+  //이름을 변경
+  const { mutate: postList } = usePostList();
+
+  const { data, isLoading } = useGetLists({ boardId: Number(boardId) });
+
+  const handleDragEnd = ({ source, destination }: DropResult) => {
     if (!destination) return;
 
-    //내부로 움직일 때
-    if (source.droppableId === destination.droppableId) {
-      const sourceListTodos = [...board[source.droppableId]];
-      const targetTodo = sourceListTodos[source.index];
-
-      sourceListTodos.splice(source.index, 1);
-      sourceListTodos.splice(destination.index, 0, targetTodo);
-
-      setBoard({ ...board, [source.droppableId]: sourceListTodos });
-    }
-
-    //외부로 움직일 때
-    if (source.droppableId !== destination.droppableId) {
-      const sourceListTodos = [...board[source.droppableId]];
-      const destinationListTodos = [...board[destination.droppableId]];
-      const targetTodo = sourceListTodos[source.index];
-
-      sourceListTodos.splice(source.index, 1);
-      destinationListTodos.splice(destination.index, 0, targetTodo);
-
-      setBoard({
-        ...board,
-        [source.droppableId]: sourceListTodos,
-        [destination.droppableId]: destinationListTodos,
-      });
-    }
+    putList(
+      { source, destination },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["lists"] });
+        },
+      },
+    );
   };
 
-  const onBoardAdd = () => {
-    const newList = `List${Object.keys(board).length + 1}`;
+  const handleListAdd = () => {
+    const name = prompt("리스트명을 입력하세요.");
 
-    setBoard({ ...board, [newList]: [] });
+    if (!name) return;
+
+    postList(
+      { name, boardId: Number(boardId) },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["lists"] });
+        },
+      },
+    );
   };
+
+  if (isLoading) return <></>;
 
   return (
     <>
-      <Header />
+      <Header userName="devbit4" />
       <div className="flex overflow-hidden h-[calc(100%-46px)]">
         <Sidebar />
         <div className="overflow-x-auto flex items-start h-full p-4">
-          <DragDropContext onDragEnd={onDragEnd}>
-            {Object.keys(board).map((listId) => {
-              return (
-                <TodoList key={listId} listId={listId} toDos={board[listId]} />
-              );
+          <DragDropContext onDragEnd={handleDragEnd}>
+            {data?.lists.map((list) => {
+              return <List key={list.id} list={list} />;
             })}
           </DragDropContext>
 
-          <Button label="+ Add Another List" onClick={onBoardAdd} />
+          <Button label="+ Add Another List" onClick={handleListAdd} />
         </div>
       </div>
     </>

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Button from "./_components/Button";
 
-export default function Home() {
+export default function HomePage() {
   return (
     <div className="w-full h-full p-20 flex justify-between text-center bg-[#d7eab1]">
       <div className="flex flex-col justify-center text-left">
